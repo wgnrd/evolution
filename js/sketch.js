@@ -5,7 +5,7 @@ var agentID=10;
 function setup()
 {
     //Create world
-    createCanvas(displayWidth - 30, displayHeight - 70);
+    createCanvas(displayWidth - 30, displayHeight /1.3);
 
     for(i=0;i<80;i++)
     {
