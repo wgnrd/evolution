@@ -1,11 +1,14 @@
 var agents = [];
 var food = [];
-var agentID=10;
+var agentNumber=10;
+var avgSpeed=0;
+var avgForce=0;
+var d = 10;
 
 function setup()
 {
     //Create world
-    createCanvas(displayWidth - 30, displayHeight /1.3);
+    createCanvas(displayWidth - 30, displayHeight /2);
 
     for(i=0;i<80;i++)
     {
@@ -23,9 +26,12 @@ function setup()
 
 function draw()
 {
+    avgSpeed = 0;
+    avgForce = 0;
     background(30);
-    //set target to mouse
-    var target = createVector(mouseX, mouseY);
+
+    // console.log(agents[0].closestFood);
+
     for(i=food.length-1;i>0;i--)
     {
         noStroke();
@@ -38,10 +44,9 @@ function draw()
         food.push(createVector(random(width), random(height)));
     }
 
-    var maxmaxSpeed = 0;
-    var allspeed = 0;
     for(var i = agents.length - 1; i >= 0; i--)
     {
+        agents[i].boundaries();
         agents[i].seek();
         agents[i].update();
         agents[i].display();
@@ -51,21 +56,26 @@ function draw()
         if(newAgent!=null)
         {
             agents.push(newAgent);
-            agentID +=1;
-            console.log(agentID);
+            agentNumber +=1;
         }
-
-        allspeed += agents[i].maxSpeed;
-        //Max. Max.Speed
-        if (agents[i].maxSpeed > maxmaxSpeed)
-        {
-            maxmaxSpeed = agents[i].maxSpeed;
-        }
-
+        avgForce += agents[i].dna[1];
+        avgSpeed += agents[i].dna[0];
+        
         if (agents[i].dead)
         {
             agents.splice(i,1);
         }
     }
+    displayDebug();
 
+}
+
+function displayDebug()
+{
+    removeElements();
+    var PSpeed = createP('Avg. Speed: '+ avgSpeed/agents.length);
+    var PNumber = createP('Number of Agents: ' + agentNumber);
+    var PForce = createP('Avg. Force: ' + avgForce/agents.length);
+    var PAlive = createP('Agents alive: ' + agents.length);
+    var PFood = createP('Food: ' + food.length)
 }
