@@ -1,3 +1,7 @@
+var sightCircleColor = '#334552';
+var healthyColor = '#3498db';
+var SickColor = '#d62c1a';
+
 function Agent(x,y,dna)
 {
     this.dna = [];
@@ -7,6 +11,8 @@ function Agent(x,y,dna)
     this.size = 3.5;
     this.health = 100;
     this.dead = false;
+    this.age = 0;
+    this.oldest = false;
 
     if (dna == null)
     {
@@ -18,13 +24,13 @@ function Agent(x,y,dna)
         this.dna[2] = random(0,150);
     }else {
         this.dna[0] = dna[0];
-        this.dna[0] += random(-0.05,0.05);
+        this.dna[0] += random(-0.5,0.5);
 
         this.dna[1] = dna[1];
-        this.dna[1] += random(-0.5,0.5); 
+        this.dna[1] += random(-0.05,0.05); 
 
         this.dna[2] = dna[2];
-        this.dna[2] += random(-10,10);
+        this.dna[2] += random(-15,15);
     }
 
     var closestFood = p5.Vector;
@@ -53,16 +59,20 @@ function Agent(x,y,dna)
 
         var desired = null;
 
+        //left side
         if (this.position.x < d) {
             desired = createVector(this.dna[0], this.velocity.y);
         }
+        //right side
         else if (this.position.x > width -d) {
             desired = createVector(-this.dna[0], this.velocity.y);
         }
 
+        //top side
         if (this.position.y < d) {
             desired = createVector(this.velocity.x, this.dna[0]);
         }
+        //bottom side
         else if (this.position.y > height-d) {
             desired = createVector(this.velocity.x, -this.dna[0]);
         }
@@ -127,17 +137,20 @@ function Agent(x,y,dna)
     };
 
     // Displays the agent in the world
-    this.display = function()
-    {
-        var healthy = color('green');
-        var sick = color('red');
+    this.display = function(){
+
+        var healthy = color(healthyColor);
+        var sick = color(SickColor);
 
         var theta = this.velocity.heading() + PI/2;
 
 
         fill(lerpColor(sick,healthy,this.health/100));
         stroke(200);
-        strokeWeight(0);
+        if(this.oldest){
+            strokeWeight(2);}
+        else{
+            strokeWeight(0);}
         push();
         translate(this.position.x,this.position.y);
         rotate(theta);
@@ -149,6 +162,7 @@ function Agent(x,y,dna)
         pop();
         
         noFill();
+        stroke(sightCircleColor);
         strokeWeight(1);
         
         ellipse(this.position.x, this.position.y, this.dna[2]*2);
