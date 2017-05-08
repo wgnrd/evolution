@@ -13,6 +13,7 @@ function Agent(x,y,dna)
     this.dead = false;
     this.age = 0;
     this.oldest = false;
+    var desiredseparation = 100;
 
     if (dna == null)
     {
@@ -22,6 +23,8 @@ function Agent(x,y,dna)
         this.dna[1] = random(0.1,0.3);
         //this.dna[2] = sight
         this.dna[2] = random(0,150);
+        //this.dna[3] = wannaseperate
+        this.dna[3] = random(-20,20);
     }else {
         this.dna[0] = dna[0];
         this.dna[0] += random(-0.5,0.5);
@@ -31,6 +34,9 @@ function Agent(x,y,dna)
 
         this.dna[2] = dna[2];
         this.dna[2] += random(-15,15);
+
+        this.dna[3] = dna[3];
+        this.dna[3] += random(-2,2);
     }
 
     var closestFood = p5.Vector;
@@ -60,7 +66,7 @@ function Agent(x,y,dna)
         var desired = null;
 
         //left side
-        if (this.position.x < d) {
+        if (this.position.x < d*2) {
             desired = createVector(this.dna[0], this.velocity.y);
         }
         //right side
@@ -88,12 +94,7 @@ function Agent(x,y,dna)
 
     this.clone = function()
     {
-        if (random()<this.health*0.00001)
-        {
-            return new Agent(this.position.x,this.position.y, this.dna)
-        }else{
-            return null;
-        }
+        return new Agent(this.position.x,this.position.y, this.dna);
     }
 
     // STEER = desired - velocity
@@ -165,6 +166,45 @@ function Agent(x,y,dna)
         stroke(sightCircleColor);
         strokeWeight(1);
         
+        // ellipse(this.position.x, this.position.y, this.dna[2]*2);
         ellipse(this.position.x, this.position.y, this.dna[2]*2);
+        
     };
+
+    this.seperate = function(agents){
+        var sepForce = this.DoSeparate(agents);
+        this.applyForce(sepForce);
+    }
+
+     // Separation
+  // Method checks for nearby vehicles and steers away
+  this.DoSeparate = function(agents) {
+    var sum = createVector();
+    var count = 0;
+    // For every boid in the system, check if it's too close
+    for (var i = 0; i < agents.length; i++) {
+      var d = p5.Vector.dist(this.position, agents[i].position);
+      // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
+      if ((d > 0) && (d < this.dna[2])) {
+        // Calculate vector pointing away from neighbor
+        var diff = p5.Vector.sub(this.position, agents[i].position);
+        diff.normalize();
+        diff.div(d*this.dna[3]);        // Weight by distance
+        
+        sum.add(diff);
+        count++;            // Keep track of how many
+      }
+    }
+    // Average -- divide by how many
+    if (count > 0) {
+      sum.div(count);
+      // Our desired vector is the average scaled to maximum speed
+      sum.normalize();
+      sum.mult(this.dna[0]);
+      // Implement Reynolds: Steering = Desired - Velocity
+      sum.sub(this.velocity);
+      sum.limit(this.dna[1]);
+    }
+    return sum;
+  };
 }

@@ -4,6 +4,11 @@ var agentNumber = 10;
 var d = 10;
 var data = {};
 var oldest = 0;
+var dynasty = 1;
+var avgSeperate = 0;
+var timestamp = 0;
+var bigdata = [];
+var foodSpawnRate = 0.08;
 
 function setup() {
     var avgForce = 0;
@@ -26,27 +31,28 @@ function setup() {
 }
 function draw() {
     background('#1C2F3B');
-    console.log();
+    timestamp += 1;
     for (i = food.length - 1; i > 0; i--) {
         noStroke();
         fill('#f39c12');
         ellipse(food[i].x, food[i].y, 5);
     }
 
-    if (random() < 0.08) {
+    if (random() < foodSpawnRate) {
         food.push(createVector(random(width), random(height)));
     }
 
     for (var i = agents.length - 1; i >= 0; i--) {
         agents[i].boundaries();
         agents[i].seek();
+        agents[i].seperate(agents);
         agents[i].update();
         agents[i].display();
         agents[i].age += 1;
 
-        var newAgent = agents[i].clone();
-        if (newAgent != null) {
-            agents.push(newAgent);
+        if (random()<agents[i].health*0.00001)
+        {
+            agents.push(agents[i].clone());
             agentNumber += 1;
             updateInfo();
             displayDebug();
@@ -58,6 +64,18 @@ function draw() {
 
             updateInfo();
             displayDebug();
+        }
+        if (agents.length == 0){
+            dynasty += 1;
+
+            // DOWNLOAD
+            // var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(bigdata));
+            // var dlAnchorElem = document.getElementById('downloadAnchorElem');
+            // dlAnchorElem.setAttribute("href",     dataStr     );
+            // dlAnchorElem.setAttribute("download", dynasty-1+"evolution.json");
+            // dlAnchorElem.click();
+
+            setup();
         }
     }
 }
@@ -75,17 +93,19 @@ function updateInfo() {
 
     avgSpeed = 0;
     avgForce = 0;
+    avgSeperate = 0;
     
     for (var i = agents.length - 1; i >= 0; i--) {
         avgForce += agents[i].dna[1];
         avgSpeed += agents[i].dna[0];
+        avgSeperate += agents[i].dna[3];
 
         if (oldest <= agents[i].age / 60){
             oldest = (agents[i].age / 60).toFixed(2);
             agents[i].oldest = true;
         }
     }
-
+    avgSeperate = (avgSeperate / agents.length).toFixed(2);
     avgForce = (avgForce / agents.length).toFixed(2);
     avgSpeed = (avgSpeed / agents.length).toFixed(2);
 }
@@ -96,15 +116,22 @@ function displayDebug() {
         {key: 'Geschwindigkeit Ø', value: avgSpeed},
         {key: 'Wendigkeit Ø', value: avgForce},
         {key: 'Anzahl an \'Agnenten\'', value: agents.length},
+        {key: 'Love ', value: avgSeperate},
         {key: 'Iteration', value: agentNumber},
-        {key: 'Ältester (sek)', value: oldest}
+        {key: 'Ältester (sek)', value: oldest},
+        {key: 'Dynastie', value: dynasty}
     ];
-
+    for(i=0;i<data.d.length;i++)
+    {
+        bigdata.push(timestamp);
+        bigdata.push(data.d[i]);
+    }
     // Injecting data into table
     $('#debugInfoTable tr').not(':first').remove();
     for(var i = 0; i < data.d.length; i++)
         html += '<tr><td>' + data.d[i].key + '</td><td>' + data.d[i].value + '</td></tr>';
     $('#debugInfoTable tbody').first().append(html);
+
 
 }
 
