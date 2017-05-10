@@ -10,6 +10,9 @@ var timestamp = 0;
 var bigdata = [];
 var foodSpawnRate = 0.08;
 
+var downloadChecked = false;
+var starvingChecked = false;
+
 function setup() {
     var avgForce = 0;
     var avgSpeed = 0;
@@ -28,6 +31,11 @@ function setup() {
     }
     updateInfo();
     displayDebug();
+
+    if ($('#checkboxDownload').prop('checked')){
+        downloadChecked = true;
+    }
+
 }
 function draw() {
     background('#1C2F3B');
@@ -37,7 +45,6 @@ function draw() {
         fill('#f39c12');
         ellipse(food[i].x, food[i].y, 5);
     }
-
     if (random() < foodSpawnRate) {
         food.push(createVector(random(width), random(height)));
     }
@@ -69,15 +76,24 @@ function draw() {
             dynasty += 1;
 
             // DOWNLOAD
-            // var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(bigdata));
-            // var dlAnchorElem = document.getElementById('downloadAnchorElem');
-            // dlAnchorElem.setAttribute("href",     dataStr     );
-            // dlAnchorElem.setAttribute("download", dynasty-1+"evolution.json");
-            // dlAnchorElem.click();
+            if (downloadChecked){
+                var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(bigdata));
+                var dlAnchorElem = document.getElementById('downloadAnchorElem');
+                dlAnchorElem.setAttribute("href",     dataStr     );
+                dlAnchorElem.setAttribute("download", dynasty-1+"evolution.json");
+                dlAnchorElem.click();
+            }
 
             setup();
         }
     }
+}
+
+function newDynasty()
+{
+    agents.length = 0;
+    food.length = 0;
+    setup();
 }
 
 function findOldestAgent()
@@ -116,15 +132,18 @@ function displayDebug() {
         {key: 'Geschwindigkeit Ø', value: avgSpeed},
         {key: 'Wendigkeit Ø', value: avgForce},
         {key: 'Anzahl an \'Agnenten\'', value: agents.length},
-        {key: 'Love ', value: avgSeperate},
+        {key: 'Spread force Ø', value: avgSeperate},
         {key: 'Iteration', value: agentNumber},
         {key: 'Ältester (sek)', value: oldest},
         {key: 'Dynastie', value: dynasty}
     ];
-    for(i=0;i<data.d.length;i++)
-    {
-        bigdata.push(timestamp);
-        bigdata.push(data.d[i]);
+    
+    if (downloadChecked){
+        for(i=0;i<data.d.length;i++)
+        {
+            bigdata.push(timestamp);
+            bigdata.push(data.d[i]);
+        }   
     }
     // Injecting data into table
     $('#debugInfoTable tr').not(':first').remove();

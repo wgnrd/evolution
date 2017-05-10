@@ -189,7 +189,7 @@ function Agent(x,y,dna)
         // Calculate vector pointing away from neighbor
         var diff = p5.Vector.sub(this.position, agents[i].position);
         diff.normalize();
-        diff.div(d*this.dna[3]);        // Weight by distance
+        diff.div((d/3)+this.dna[3]);        // Weight by distance
         
         sum.add(diff);
         count++;            // Keep track of how many
