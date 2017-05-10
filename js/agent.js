@@ -64,23 +64,24 @@ function Agent(x,y,dna)
     this.boundaries = function() {
 
         var desired = null;
-
         //left side
-        if (this.position.x < d*2) {
-            desired = createVector(this.dna[0], this.velocity.y);
+        if (this.position.x < d) {
+            desired = createVector(this.dna[0]*3, this.velocity.y);
         }
         //right side
         else if (this.position.x > width -d) {
-            desired = createVector(-this.dna[0], this.velocity.y);
+            desired = createVector(-this.dna[0]*3, this.velocity.y);
         }
 
         //top side
         if (this.position.y < d) {
-            desired = createVector(this.velocity.x, this.dna[0]);
+            
+            desired = createVector(this.velocity.x, this.dna[0]*3);
         }
         //bottom side
-        else if (this.position.y > height-d) {
-            desired = createVector(this.velocity.x, -this.dna[0]);
+        else if (this.position.y+this.velocity.y > height-d) {
+            
+            desired = createVector(this.velocity.x, -this.dna[0]*3);
         }
 
         if (desired !== null) {
