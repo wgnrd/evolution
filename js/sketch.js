@@ -52,7 +52,9 @@ function draw() {
     for (var i = agents.length - 1; i >= 0; i--) {
         agents[i].boundaries();
         agents[i].seek();
-        agents[i].seperate(agents);
+        if (!$('#checkboxSpreadForce').prop('checked')){
+            agents[i].seperate(agents);
+        }
         agents[i].update();
         agents[i].display();
         agents[i].age += 1;
@@ -114,7 +116,10 @@ function updateInfo() {
     for (var i = agents.length - 1; i >= 0; i--) {
         avgForce += agents[i].dna[1];
         avgSpeed += agents[i].dna[0];
-        avgSeperate += agents[i].dna[3];
+        
+        if (!$('#checkboxSpreadForce').prop('checked')){
+            avgSeperate += agents[i].dna[3];
+        }
 
         if (oldest <= agents[i].age / 60){
             oldest = (agents[i].age / 60).toFixed(2);

@@ -150,9 +150,11 @@ function Agent(x,y,dna)
         fill(lerpColor(sick,healthy,this.health/100));
         stroke(200);
         if(this.oldest){
-            strokeWeight(2);}
+            strokeWeight(2);
+        }
         else{
-            strokeWeight(0);}
+            strokeWeight(0);
+        }
         push();
         translate(this.position.x,this.position.y);
         rotate(theta);
@@ -164,11 +166,16 @@ function Agent(x,y,dna)
         pop();
         
         noFill();
-        stroke(sightCircleColor);
-        strokeWeight(1);
+        if ($('#showSight').prop('checked')){
+            strokeWeight(0.2);
+            // textSize(12);
+            // textAlign(CENTER);
+            // text(this.health.toFixed(1), this.position.x, this.position.y - this.dna[2]/2);
+            // stroke(sightCircleColor);
+            // strokeWeight(1);
         
-        // ellipse(this.position.x, this.position.y, this.dna[2]*2);
         ellipse(this.position.x, this.position.y, this.dna[2]*2);
+        }
         
     };
 
