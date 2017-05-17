@@ -67,7 +67,7 @@
       </div>
       <div class="checkbox">
         <label>
-          <input type="checkbox" id="checkboxDownload" value="downloadMetadata" data-toggle="toggle" data-size="small">
+          <input type="checkbox" id="checkboxDownload" data-toggle="toggle" data-size="small">
           Logging von Metadaten der Dynastie
         </label>
       </div>
@@ -90,7 +90,7 @@
           </p>
       </div>
       
-      <button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="right" title="Startet einen neuen Zyklus" onclick="newDynasty()">Neue Dynastie</button>
+      <button id="newDynasty" type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="right" title="Startet einen neuen Zyklus">Neue Dynastie</button>
     </div>
 
   </div>
@@ -162,7 +162,10 @@ $(document).ready(function(){
   $('#checkboxSpreadForce').change(function (){
     updateInfo();
   });
+  $('#defaultCanvas0').css("border-radius", "4px");
 
+  $('#newDynasty').on('click touchstart', function(){
+    newDynasty();});
 
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
